@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j_rag
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - /Users/delta/Desktop/Project/DockerData/neo4j:/data
+      - /Users/delta/Desktop/Project/DockerData/neo4j/plugins:/plugins  # Add this line for plugins
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_PLUGINS=["apoc"]  # Enable APOC plugin
