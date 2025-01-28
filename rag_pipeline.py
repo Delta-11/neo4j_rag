@@ -4,7 +4,7 @@ import logging
 import re
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any
-
+import json
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -30,7 +30,13 @@ class Entity(BaseModel):
     """Entity model for extracted information."""
     text: str
     type: Optional[str] = None
-    value: str  # Change this to enforce string values only
+    value: Any  # Change from str to Any to handle complex values
+    
+    def to_string_value(self) -> str:
+        """Convert complex values to string representation."""
+        if isinstance(self.value, dict):
+            return json.dumps(self.value)
+        return str(self.value)
 
 class Entities(BaseModel):
     """Container for extracted entities."""
@@ -93,7 +99,7 @@ class RAGPipeline:
             - File paths
             - Commands
 
-            For each piece of information, provide its value and type.
+            If no text is provided or if the text contains no relevant information, return an empty entities list.
 
             Text: {text}
 
@@ -106,11 +112,14 @@ class RAGPipeline:
                         "value": "the actual value"
                     }}
                 ]
-            }}"""
+            }}
+
+            Return exactly: {{"entities": []}} if no entities are found."""
             
             parser = PydanticOutputParser(pydantic_object=Entities)
             prompt = ChatPromptTemplate.from_messages([
-                ("system", "You are an expert at extracting structured information from text."),
+                ("system", """You are an expert at extracting structured information from text.
+                Always return valid JSON in the requested format, even for empty or invalid inputs."""),
                 ("user", entity_prompt)
             ])
             
@@ -133,7 +142,7 @@ class RAGPipeline:
                     # Create metadata
                     metadata = {
                         "entity_type": entity.type,
-                        "entity_value": entity.value,
+                        "entity_value": entity.to_string_value(),  # Use the conversion method
                         "entity_text": entity.text,
                         "source": doc.metadata.get("source", "unknown")
                     }

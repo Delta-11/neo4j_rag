@@ -41,6 +41,7 @@ def main():
         logging.error(f"Failed to initialize RAG pipeline: {str(e)}")
         raise
 
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     main()
