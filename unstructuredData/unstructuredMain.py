@@ -144,26 +144,6 @@ def initialize_graph_transformer_and_push_to_neo4j(
         raise
 
 
-def generate_allowed_relationships(relationships):
-    """
-    Generate allowed relationships using the AzureOpenAI model.
-
-    Args:
-        relationships (list): List of relationship types.
-
-    Returns:
-        list: List of allowed relationships in the format (source, relationship, target).
-    """
-    try:
-        llm = AzureOpenAIModel().get_model()
-        prompt = f"Generate allowed relationships from the following list of relationships: {relationships}"
-        response = llm.invoke(prompt)
-        allowed_relationships = dspy.parse(response.content)
-        logger.info(f"Generated allowed relationships: {allowed_relationships}")
-        return allowed_relationships
-    except Exception as e:
-        logger.error(f"Error generating allowed relationships: {e}")
-        raise
 
 def pipeline_to_push_documents_to_graph():
     try:
