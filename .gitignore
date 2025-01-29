@@ -12,3 +12,4 @@ wheels/
 AltaCV_Template.pdf
 ansible-latest-april2019_compress.pdf
 devopssetup.txt
+.env
