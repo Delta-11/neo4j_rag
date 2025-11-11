@@ -2,18 +2,16 @@ name: opencode
 
 on:
   issues:
-    types: [opened]
-  issue_comment:
-    types: [created]
+    types: [opened] # only trigger when an issue is created for the first time
 
 jobs:
   opencode:
-    if: |
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '/oc') || contains(github.event.issue.body, '/opencode'))) ||
-      (github.event_name == 'issue_comment' && (contains(github.event.comment.body, '/oc') || contains(github.event.comment.body, '/opencode')))
+    # Run only if the issue body contains /oc or /opencode
+    if: contains(github.event.issue.body, '/oc') || contains(github.event.issue.body, '/opencode')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +21,7 @@ jobs:
       - name: Run opencode
         uses: sst/opencode/github@latest
         env:
-          AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }} 
+          AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
           AZURE_RESOURCE_NAME: ${{ secrets.AZURE_RESOURCE_NAME }}
           AZURE_API_VERSION: ${{ secrets.AZURE_API_VERSION }}
         with:
