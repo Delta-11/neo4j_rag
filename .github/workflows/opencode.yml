@@ -23,6 +23,6 @@ jobs:
         uses: sst/opencode/github@latest
         env:
           AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
-          BASE_URL: ${{ secrets.AZURE_RESOURCE_NAME }}
+          AZURE_API_BASE: ${{ secrets.AZURE_RESOURCE_NAME }}
         with:
           model: azure/gpt-4.1-mini
