@@ -1,17 +1,18 @@
 name: opencode
 
 on:
-  issues:
-    types: [opened] # only trigger when an issue is created for the first time
+  issue_comment:
+    types: [created]
 
 jobs:
   opencode:
-    # Run only if the issue body contains /oc or /opencode
-    if: contains(github.event.issue.body, '/oc') || contains(github.event.issue.body, '/opencode')
+    # Run only if the comment body contains /oc or /opencode
+    if: |
+      contains(github.event.comment.body, '/oc') ||
+      contains(github.event.comment.body, '/opencode')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
