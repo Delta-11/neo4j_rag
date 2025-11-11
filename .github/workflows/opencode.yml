@@ -26,4 +26,4 @@ jobs:
           AZURE_RESOURCE_NAME: ${{ secrets.AZURE_RESOURCE_NAME }}
           AZURE_API_VERSION: ${{ secrets.AZURE_API_VERSION }}
         with:
-          model: azure/gpt-4o-mini
+          model: azure/gpt-4.1-mini
