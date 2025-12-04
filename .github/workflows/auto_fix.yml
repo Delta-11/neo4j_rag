@@ -1,0 +1,46 @@
+name: Auto-fix Issues
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-issue:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger fix pipeline
+      env:
+        TOKEN: ${{ secrets.TOKEN }}
+        FASTAPI_SERVER_URL: ${{ secrets.FASTAPI_SERVER_URL }}
+        REVIEWERS: ${{ vars.REVIEWERS || 'default-reviewer' }}
+      run: |
+        # Extract repo URL and issue details
+        REPO_URL="https://github.com/${{ github.repository }}.git"
+        ISSUE_NUMBER="${{ github.event.issue.number }}"
+        BRANCH_NAME="aider/${ISSUE_NUMBER}"
+        BASE_BRANCH="${{ github.event.repository.default_branch }}"
+        
+        # Create the branch first
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git checkout -b "${BRANCH_NAME}"
+        git push origin "${BRANCH_NAME}"
+        
+        # Call the FastAPI server
+        curl -X POST "${FASTAPI_SERVER_URL}/fix-issue" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"repo_url\": \"${REPO_URL}\",
+            \"branch_name\": \"${BRANCH_NAME}\",
+            \"issue_number\": ${ISSUE_NUMBER},
+            \"github_token\": \"${TOKEN}\",
+            \"base_branch\": \"${BASE_BRANCH}\",
+            \"reviewers\": \"${REVIEWERS}\",
+            \"ec2_config\": {
+              \"host\": \"ec2-107-23-26-219.compute-1.amazonaws.com\",
+              \"username\": \"ubuntu\",
+              \"key_path\": \"./TranscriptionService.pem\",
+              \"port\": 22
+            }
+          }"
+        
+        echo "Fix pipeline triggered for issue #${ISSUE_NUMBER}"
