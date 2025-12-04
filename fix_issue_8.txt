@@ -1,0 +1,3 @@
+Automated fix for issue #8
+Branch: aider1/8
+Repository: https://github.com/Delta-11/neo4j_rag.git
